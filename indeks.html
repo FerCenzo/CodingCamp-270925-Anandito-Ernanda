@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #FFD700, #FFA500, #75B8B1); /* Gradient baru: dari gold (kuning emas) ke orange (hangat, match warna text orange/darkgoldenrod), lalu ke teal (transisi smooth ke tombol warna, segar untuk tema profil) */
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            min-height: 100vh; /* Pastikan gradient full height */
+        }
+        .navbar {
+            width: 100vw;
+            background-color: rgb(75, 184, 177);
+            display: flex;
+        }
+        .square {
+            width: 100vw;
+            background-color: rgba(75, 184, 177, 0.8); /* Semi-transparan agar gradient body terlihat samar, efek layered – tetap match dengan teal akhir gradient */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center konten di square */
+            padding: 20px 0;
+        }
+        .warna {
+            width: 80vw; /* Dikurangi sedikit dari 50vw agar lebih proporsional di center */
+            max-width: 800px; /* Responsif untuk layar besar */
+            border: 4px solid; /* Border solid, warna akan dianimasikan */
+            padding: 10px;
+            margin: 10px auto; /* Center margin */
+            display: flex; /* Layout horizontal: tombol di kiri, text di kanan */
+            justify-content: space-between; /* Tombol di kiri, <p> di kanan */
+            align-items: flex-start; /* Align ke atas agar text tidak bergeser vertikal */
+            list-style: none; /* Hilangkan bullet point untuk <li> */
+            flex-direction: row; /* Pastikan horizontal */
+            font-family: Arial;
+            text-decoration: none; /* Diperbaiki dari 'solid' yang invalid */
+            border-radius: 8px; /* Tambahan subtle rounded untuk modern look, tanpa ubah design inti */
+            animation: rgbShift 2s ease-in-out infinite; /* Animasi perubahan warna RGB yang bergerak (cycle merah-hijau-biru) */
+        }
+        /* Keyframes untuk animasi border color: Cycle RGB (merah -> hijau -> biru -> merah) secara smooth */
+        @keyframes rgbShift {
+            0% {
+                border-color: rgb(255, 0, 0); /* Merah */
+            }
+            33% {
+                border-color: rgb(0, 255, 0); /* Hijau */
+            }
+            66% {
+                border-color: rgb(0, 0, 255); /* Biru */
+            }
+            100% {
+                border-color: rgb(255, 0, 0); /* Kembali ke merah */
+            }
+        }
+        .warna button, .warna a {
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: none; /* Untuk link LinkedIn */
+            padding: 0;
+            margin: 0;
+        }
+        .warna p {
+            margin: 0;
+            flex: 1; /* Biarkan <p> mengambil ruang tersisa di kanan */
+            padding-left: 10px; /* Jarak dari tombol */
+            white-space: pre-wrap; /* Biarkan text multi-line tanpa ganggu layout */
+            word-wrap: break-word;
+            text-align: center; /* Teks konten centered di area <p> */
+            opacity: 0; /* Awalnya hidden untuk animasi slide */
+            transform: translateY(100%); /* Mulai dari bawah luar (state default: hidden) – animasi dari bawah ke atas */
+            transition: opacity 0.4s ease, transform 0.6s ease-in-out; /* Smooth transition, sedikit lebih lambat untuk efek tutup yang jelas */
+        }
+        .warna p.animate-slide { /* Class ditambahkan via JS untuk trigger animasi tampil */
+            opacity: 1;
+            transform: translateY(0); /* Slide in dari bawah ke posisi normal (bergerak ke atas) */
+        }
+        /* Tambahan: Saat class dihapus, transition akan reverse ke state hidden (slide out ke bawah) */
+        .foto {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px; /* Jarak dari daftar */
+        }
+        .foto img {
+            border: 4px solid rgba(255, 255, 255, 0.8); /* Border putih semi-transparan, menyesuaikan gradient (terlihat clean di background) */
+            border-radius: 50%; /* Rounded circle untuk foto profil, modern dan menyesuaikan */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow untuk depth, tanpa ubah design */
+        }
+        .judul {
+            justify-content: center;
+        }
+        ul {
+            list-style: none; /* Hilangkan style default ul */
+            padding: 0;
+            margin: 0; /* Hilangkan default margin ul */
+            width: 100%; /* Full width di square */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        h1 {
+            animation: fadeInUp 1.5s ease-out forwards; /* Animasi lembut: fade in sambil slide up dari bawah */
+            opacity: 0;
+            transform: translateY(30px); /* Mulai dari bawah */
+            text-shadow: 
+                0 0 5px rgba(255, 255, 255, 0.8), 
+                0 0 10px rgba(255, 255, 255, 0.6), 
+                0 0 15px rgba(255, 255, 255, 0.4); /* Efek glow putih subtle, layered untuk soft glow */
+            /* Glow ini continuous setelah animasi, blend bagus dengan gradient hangat */
+        }
+        h2 {
+            animation: fadeInUp 1.5s ease-out 0.3s forwards; /* Delay sedikit untuk staggered effect */
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        /* Keyframes untuk animasi h1/h2: gerakan lembut entrance */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Keyframes untuk slide text (sudah di atas via transition, tapi bisa extend jika perlu) */
+        @keyframes slideInBottom {
+            from {
+                opacity: 0;
+                transform: translateY(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Responsif: Untuk mobile, kurangi width */
+        @media (max-width: 768px) {
+            .warna {
+                width: 90vw;
+                flex-direction: column; /* Stack vertikal di mobile agar readable */
+                align-items: stretch;
+            }
+            .warna p {
+                padding-left: 0;
+                padding-top: 10px;
+                text-align: center; /* Tetap center di mobile */
+            }
+            h1 {
+                text-shadow: 
+                    0 0 3px rgba(255, 255, 255, 0.8), 
+                    0 0 6px rgba(255, 255, 255, 0.6), 
+                    0 0 9px rgba(255, 255, 255, 0.4); /* Glow lebih kecil di mobile untuk tidak overwhelm */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color:orange">Welcome To My Profile&#128075</h1>
+    <h2 style="color: darkgoldenrod">Ini dia beberapa hal tentang gua kalo lo ga tau!</h2>
+
+    <div class="square">
+        <ul> 
+            <!-- Struktur diperbaiki: <ul> sekarang di dalam <div class="square"> untuk valid HTML -->
+            <!-- <li> langsung di <ul>, tidak ada div nested invalid -->
+            <!-- Perbaikan button: Hilangkan <h3> nested di <p> (tidak valid semantik), ganti ke <span> untuk style text tombol -->
+            <!-- Emoji tetap dipertahankan -->
+            <li class="warna">
+                <button id="btn-profile" onclick="handleClick('profile', this)">
+                    <span style="color:rgb(25, 255, 67); font-size: 1.2em; font-weight: bold;">&#128204 Arnan's Profile</span>
+                </button>
+                <p id="ARX1010"></p> <!-- Text slide in saat JS dipanggil -->
+            </li>
+            <li class="warna">
+                <button id="btn-about" onclick="handleClick('aboutMe', this)">
+                    <span style="color:brown; font-size: 1.2em; font-weight: bold;">&#128100 About Me</span>
+                </button>
+                <p id="ARX1031"></p>
+            </li>
+            <li class="warna">
+                <button id="btn-contacts" onclick="handleClick('contacts', this)">
+                    <span style="color:darkorange; font-size: 1.2em; font-weight: bold;">&#128242 Contact Person</span>
+                </button>
+                <p id="ARX3106"></p>
+            </li>
+            <li class="warna" style="color:magenta;">
+                <a href="https://www.linkedin.com/in/arnandito-fernanda-08907036a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">
+                    <span style="color:magenta; font-size: 1.2em; font-weight: bold;">&#128202 My LinkedIn</span>
+                </a>
+                <!-- Tidak ada <p> tambahan untuk LinkedIn -->
+            </li>
+        </ul>
+        <br>
+        <div class="foto">
+            <img src="me.jpg" alt="Arnan Profile Picture" width="25%" height="25%">
+        </div>
+    </div>
+
+    <script>
+        // Fungsi helper untuk mendapatkan ID paragraf berdasarkan funcName
+        function getParagraphId(funcName) {
+            if (funcName === 'profile') return 'ARX1010';
+            if (funcName === 'aboutMe') return 'ARX1031';
+            if (funcName === 'contacts') return 'ARX3106';
+            return null;
+        }
+
+        // Fungsi helper untuk mendapatkan konten berdasarkan funcName
+        function getContent(funcName) {
+            if (funcName === 'profile') {
+                return "Hello All, " + " Welcome to my profile! " +
+                    "Sebelumnya kenalin nama gue Anandhito Ernanda " +
+                    "cuman kadang suka dipanggil dito, anan, arnan, dan banyak deh " +
+                    "Umur gue baru menginjak sekitar 19 tahun saat Desember nanti " +
+                    "jadi ya.. gue belom tua-tua banget lah yakan WKWKWK " +
+                    " ";
+            } else if (funcName === 'aboutMe') {
+                return "SEBELUM LU KOMENTAR, gue baru banget nih megang HTML, makanya cuma bisa basic doang " +
+                    "Sebenernya gue udeh punya background programming bagian ROBOTIK/IOT sedari SMA. " +
+                    "yang which is bisa dibilang ga ketebak juga, karena dari dulu sebenernya gue " +
+                    "gaa punya basic banget di bidang Robotic, tapi ada sedikit bakat dan ketertarikan di bidang elektro sedari kecil. " +
+                    "waktu SMA gue didaftarin paksa sama temen buat ikut lomba Robotic. " +
+                    "Asli... Nervous banget gue waktu itu wkwkwk, tapi akhirnya gw jalanin "+
+                    "Di lomba robotic, gue buat karya paling simple aja, kodingan juga nyontek dari AI, karena gue bener-bener GABISA ngoding sama sekali "+
+                    "setelah lomba, plot twistnya dapet juara. Alhamdulillah dah ahaha " +
+                    "maka dari itu, dan sejak saat itu, gue mulai menekuni banget dunia programming "+
+                    "walau awalnya juga rada-rada srek dan males. tapi malah itu membawa gue ke sesuatu yang baru dan keren.";
+            } else if (funcName === 'contacts') {
+                return "Kalo lu mau kontak gue, bisa lewat beberapa cara nih: " +
+                    "Email: arnan.technology@gmail.com | " +
+                    "WhatsApp : +62 8787 0XX0 3XX | " +
+                    "INSTAGRAM : @arcdit_ < AKUN PERSONAL > | " +
+                    "INSTAGRAM : @ngoding_iot.id < AKUN BISNIS > | ";
+            }
+            return '';
+        }
+
+        // Fungsi handler utama untuk klik (toggle behavior)
+        function handleClick(funcName, button) {
+            const p = document.getElementById(getParagraphId(funcName));
+            if (!p) return;
+
+            // Cek apakah teks sudah terbuka (berdasarkan innerHTML tidak kosong DAN class animate-slide aktif)
+            const isOpen = p.innerHTML !== '' && p.classList.contains('animate-slide');
+
+            if (isOpen) {
+                // Jika sudah terbuka, tutup hanya teks ini (slide out ke bawah)
+                p.classList.remove('animate-slide');
+                p.innerHTML = '';
+            } else {
+                // Jika belum terbuka, tutup semua teks lain, lalu buka teks ini
+                const allPs = document.querySelectorAll('.warna p[id]');
+                allPs.forEach(otherP => {
+                    otherP.classList.remove('animate-slide');
+                    otherP.innerHTML = '';
+                });
+
+                // Set konten dan trigger animasi slide in dari bawah
+                p.innerHTML = getContent(funcName);
+                p.classList.add('animate-slide');
+            }
+        }
+    </script>
+</body>
+</html>
